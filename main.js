@@ -6,7 +6,7 @@ console.log("Ice Boy Engine Launching...");
 
 // Initialize the game when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Using an absolute relative path to avoid subdirectory lookup mismatches
+  // Changed from './map.json' to 'map.json' to prevent subdirectory 404 pathing bugs
   fetch('map.json')
     .then(response => {
       if (!response.ok) {

@@ -44,7 +44,7 @@ export function renderBoard(mapData) {
   }
 }
 
-// Alias export to fully prevent any 'initBoard' vs 'renderBoard' mismatches
+// Alias export to fully prevent any 'initBoard' vs 'renderBoard' mismatches across main scripts
 export { renderBoard as initBoard };
 
 /**
