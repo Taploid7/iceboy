@@ -6,8 +6,8 @@ console.log("Ice Boy Engine Launching...");
 
 // Initialize the game when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Fetch our structural map layout data configuration
-  fetch('./map.json')
+  // Using an absolute relative path to avoid subdirectory lookup mismatches
+  fetch('map.json')
     .then(response => {
       if (!response.ok) {
         throw new Error(`Failed to fetch map.json configuration: ${response.status}`);
