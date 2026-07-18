@@ -1,18 +1,27 @@
-import { renderBoard } from './engine/board.js';
+// main.js - Application Bootstrapper
+import { initBoard } from './engine/board.js';
 import { initGameLoop } from './engine/game.js';
-import { loadSave } from './engine/save.js';
 
-window.addEventListener('DOMContentLoaded', async () => {
-  console.log("Ice Boy Engine Launching...");
-  
-  // Load standard historical profile parameters
-  loadSave();
+console.log("Ice Boy Engine Launching...");
 
-  // Load baseline JSON configurations synchronously
-  const mapResponse = await fetch('./data/map.json');
-  const mapData = await mapResponse.json();
-
-  // Bootstrap internal dependency states
-  renderboard(mapData);
-  initGameLoop(mapData);
+// Initialize the game when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Fetch our structural map layout data configuration
+  fetch('./map.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch map.json configuration: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(mapData => {
+      // 1. Build and render the board nodes track
+      initBoard(mapData);
+      
+      // 2. Start core event handlers, countdowns, and question tracking loops
+      initGameLoop(mapData);
+    })
+    .catch(error => {
+      console.error("Critical error during Ice Boy lifecycle initialization:", error);
+    });
 });

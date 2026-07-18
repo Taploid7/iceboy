@@ -44,6 +44,9 @@ export function renderBoard(mapData) {
   }
 }
 
+// Alias export to fully prevent any 'initBoard' vs 'renderBoard' mismatches
+export { renderBoard as initBoard };
+
 /**
  * Relocates the character element over the current node spot and centers the viewport scroll
  * @param {number} nodeIndex The current active stage state index
