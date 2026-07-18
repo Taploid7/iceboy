@@ -1,3 +1,4 @@
+// engine/game.js - Complete Anti-Spam Game State Loop Engine
 import { moveCharacterToNode } from './board.js';
 import { fetchAIQuestion } from './questions.js';
 import { showText } from './dialogue.js';
@@ -9,7 +10,7 @@ export const GameState = {
   timerInterval: null,
   mapData: null,
   currentQuestion: null,
-  isTransitioning: false // Anti-spam click guard
+  isTransitioning: false // Prevents button spamming
 };
 
 export function initGameLoop(mapData) {
@@ -27,7 +28,7 @@ function setupEventHandlers() {
   const choiceButtons = document.querySelectorAll(".choice-btn");
   choiceButtons.forEach(btn => {
     btn.onclick = (e) => {
-      if (GameState.isTransitioning) return; // Block spam clicking
+      if (GameState.isTransitioning) return; // Block input if transitioning
       const selected = parseInt(e.currentTarget.getAttribute("data-choice"));
       verifySelection(selected);
     };
@@ -44,6 +45,7 @@ async function loadCurrentLocation() {
   GameState.isTransitioning = false;
   toggleButtonsDisabled(false);
 
+  // Check if player has hit the final target victory cell
   if (GameState.currentIndex >= GameState.mapData.locations.length - 1) {
     triggerGameCompletion();
     return;
@@ -60,7 +62,7 @@ async function loadCurrentLocation() {
     const questionObj = await fetchAIQuestion(GameState.difficulty, loc.name, loc.state);
     GameState.currentQuestion = questionObj;
   } catch (err) {
-    console.warn("Using smart fallback assessment parameters.", err);
+    console.warn("API disconnect occurred. Shifting to calculated fallback parameters.", err);
     GameState.currentQuestion = null;
   }
 
@@ -94,18 +96,18 @@ function triggerHintFallback(temp) {
 
 function verifySelection(choiceIndex) {
   clearInterval(GameState.timerInterval);
-  GameState.isTransitioning = true; // Activate click block
+  GameState.isTransitioning = true; // Engage action block lock
   toggleButtonsDisabled(true);
 
   const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // Dynamically map target answers based on location state setup values
-  // Index values: 0 = freeze, 1 = melt, 2 = evaporate
+  // Calculate correct state answer mapping directly from data configurations
+  // 0 = freeze, 1 = melt, 2 = evaporate
   let correctIndex = 1; 
   if (loc.state === "freeze") correctIndex = 0;
   if (loc.state === "evaporate") correctIndex = 2;
 
-  // Use API response index override if available
+  // Prefer precise API overrides if active
   if (GameState.currentQuestion && GameState.currentQuestion.answer !== undefined) {
     correctIndex = GameState.currentQuestion.answer;
   }
@@ -119,10 +121,10 @@ function verifySelection(choiceIndex) {
     const diffBadge = document.getElementById("current-diff");
     if (diffBadge) diffBadge.textContent = GameState.difficulty.toUpperCase();
 
-    // Trigger Screen Glow Green Feedback
+    // Flash screen container green
     if (container) {
       container.classList.remove("flash-red");
-      void container.offsetWidth; // Force CSS animation reflow
+      void container.offsetWidth; // Force CSS repaint reflow
       container.classList.add("flash-green");
     }
 
@@ -137,10 +139,10 @@ function verifySelection(choiceIndex) {
     }, 2000);
 
   } else {
-    // Trigger Screen Glow Red Feedback
+    // Flash screen container red
     if (container) {
       container.classList.remove("flash-green");
-      void container.offsetWidth; 
+      void container.offsetWidth; // Force CSS repaint reflow
       container.classList.add("flash-red");
     }
 
@@ -164,7 +166,7 @@ function toggleButtonsDisabled(disabledState) {
 function triggerGameCompletion() {
   const sprite = document.getElementById("ice-boy-character");
   if (sprite) {
-    sprite.innerHTML = `<div class="character-sprite" style="filter: drop-shadow(0 0 12px #fff); font-size:64px;">💎</div>`;
+    sprite.innerHTML = `<div class="character-sprite" style="filter: drop-shadow(0 0 16px #fff); font-size:64px; animation: idle 1s ease-in-out infinite alternate;">💎</div>`;
   }
   showText(
     "Best day ever! I'm free! You unlocked the legendary Crystal Ice Boy form!", 
