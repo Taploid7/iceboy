@@ -1,4 +1,3 @@
-// engine/game.js - Complete Anti-Spam Game State Loop Engine
 import { moveCharacterToNode } from './board.js';
 import { fetchAIQuestion } from './questions.js';
 import { showText } from './dialogue.js';
@@ -10,7 +9,7 @@ export const GameState = {
   timerInterval: null,
   mapData: null,
   currentQuestion: null,
-  isTransitioning: false // Prevents button spamming
+  isTransitioning: false 
 };
 
 export function initGameLoop(mapData) {
@@ -28,7 +27,7 @@ function setupEventHandlers() {
   const choiceButtons = document.querySelectorAll(".choice-btn");
   choiceButtons.forEach(btn => {
     btn.onclick = (e) => {
-      if (GameState.isTransitioning) return; // Block input if transitioning
+      if (GameState.isTransitioning) return; 
       const selected = parseInt(e.currentTarget.getAttribute("data-choice"));
       verifySelection(selected);
     };
@@ -45,14 +44,15 @@ async function loadCurrentLocation() {
   GameState.isTransitioning = false;
   toggleButtonsDisabled(false);
 
-  // Check if player has hit the final target victory cell
-  if (GameState.currentIndex >= GameState.mapData.locations.length - 1) {
+  if (GameState.currentIndex >= GameState.mapData.locations.length) {
     triggerGameCompletion();
     return;
   }
 
   moveCharacterToNode(GameState.currentIndex);
   const loc = GameState.mapData.locations[GameState.currentIndex];
+  
+  // Set question text frame cleanly before API payload updates it
   showText(`What will happen to Ice Boy at the ${loc.name}?`, `當 Ice Boy 到達 ${loc.name}，會發生什麼事呢？`);
 
   const choicesContainer = document.getElementById("choice-buttons-container");
@@ -60,9 +60,12 @@ async function loadCurrentLocation() {
 
   try {
     const questionObj = await fetchAIQuestion(GameState.difficulty, loc.name, loc.state);
-    GameState.currentQuestion = questionObj;
+    if (questionObj) {
+      GameState.currentQuestion = questionObj;
+      showText(questionObj.question_en, questionObj.question_zh);
+    }
   } catch (err) {
-    console.warn("API disconnect occurred. Shifting to calculated fallback parameters.", err);
+    console.warn("API handling failed or blocked by CORS. Using fallback indices calculated from state.", err);
     GameState.currentQuestion = null;
   }
 
@@ -96,18 +99,17 @@ function triggerHintFallback(temp) {
 
 function verifySelection(choiceIndex) {
   clearInterval(GameState.timerInterval);
-  GameState.isTransitioning = true; // Engage action block lock
+  GameState.isTransitioning = true; 
   toggleButtonsDisabled(true);
 
   const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // Calculate correct state answer mapping directly from data configurations
-  // 0 = freeze, 1 = melt, 2 = evaporate
+  // Explicit standard configuration mappings (0 = freeze, 1 = melt, 2 = evaporate)
   let correctIndex = 1; 
   if (loc.state === "freeze") correctIndex = 0;
   if (loc.state === "evaporate") correctIndex = 2;
 
-  // Prefer precise API overrides if active
+  // Sync up and override with the API result index directly if available
   if (GameState.currentQuestion && GameState.currentQuestion.answer !== undefined) {
     correctIndex = GameState.currentQuestion.answer;
   }
@@ -121,32 +123,33 @@ function verifySelection(choiceIndex) {
     const diffBadge = document.getElementById("current-diff");
     if (diffBadge) diffBadge.textContent = GameState.difficulty.toUpperCase();
 
-    // Flash screen container green
     if (container) {
-      container.classList.remove("flash-red");
-      void container.offsetWidth; // Force CSS repaint reflow
+      container.classList.remove("flash-red", "flash-green");
+      void container.offsetWidth; 
       container.classList.add("flash-green");
     }
 
     if (sprite) sprite.className = "character-base jump-success";
-    showText("Ta-Da! It feels good!", "鏘鏘！感覺太舒服了！");
+    
+    const expEn = GameState.currentQuestion?.explanation_en || "Correct! Moving forward!";
+    const expZh = GameState.currentQuestion?.explanation_zh || "答對了！繼續前進！";
+    showText(expEn, expZh);
 
     setTimeout(() => {
       if (sprite) sprite.className = "character-base";
       if (container) container.classList.remove("flash-green");
       GameState.currentIndex++;
       loadCurrentLocation();
-    }, 2000);
+    }, 2500);
 
   } else {
-    // Flash screen container red
     if (container) {
-      container.classList.remove("flash-green");
-      void container.offsetWidth; // Force CSS repaint reflow
+      container.classList.remove("flash-red", "flash-green");
+      void container.offsetWidth; 
       container.classList.add("flash-red");
     }
 
-    if (sprite) sprite.className = "character-base blur-confused";
+    if (sprite) sprite.className = "character-base";
     showText("Am I dense, or did I become a liquid again? Try again!", "我很笨拙（密度大）嗎？還是我又變成液體了？再試一次！");
     
     setTimeout(() => {
@@ -166,7 +169,7 @@ function toggleButtonsDisabled(disabledState) {
 function triggerGameCompletion() {
   const sprite = document.getElementById("ice-boy-character");
   if (sprite) {
-    sprite.innerHTML = `<div class="character-sprite" style="filter: drop-shadow(0 0 16px #fff); font-size:64px; animation: idle 1s ease-in-out infinite alternate;">💎</div>`;
+    sprite.innerHTML = `<div class="character-sprite" style="filter: drop-shadow(0 0 20px #00ffff); font-size:68px; animation: idle 1s ease-in-out infinite alternate;">💎</div>`;
   }
   showText(
     "Best day ever! I'm free! You unlocked the legendary Crystal Ice Boy form!", 
