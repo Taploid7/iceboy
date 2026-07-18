@@ -1,8 +1,10 @@
 :root {
   --primary-bg: #e0f4ff;
-  --panel-bg: rgba(255, 255, 255, 0.9);
+  --panel-bg: rgba(255, 255, 255, 0.95);
   --accent-color: #00a8ff;
-  --danger-color: #ff4d4d;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --neon-glow: 0 0 15px rgba(0, 168, 255, 0.6);
 }
 
 body {
@@ -14,26 +16,63 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
 #game-container {
   width: 800px;
   height: 600px;
-  background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  background: linear-gradient(180deg, #1a2a6c 0%, #275d8c 50%, #243b55 100%);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
 header {
-  padding: 12px;
+  padding: 14px 20px;
   display: flex;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.5);
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 5;
+}
+
+#lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+#lang-toggle-btn:hover {
+  background: white;
+  color: #1a2a6c;
+}
+
+#difficulty-badge {
+  color: white;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+#current-diff {
+  color: var(--accent-color);
 }
 
 #game-screen {
@@ -43,109 +82,164 @@ header {
   overflow-y: hidden;
   display: flex;
   align-items: center;
+  padding: 0 20px;
 }
 
 #board-track {
   display: flex;
   padding: 40px;
-  gap: 60px;
+  gap: 70px;
 }
 
 .board-node {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   border: 4px solid var(--accent-color);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
   font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
 }
 
-.board-node.cold { background: #e3f2fd; border-color: #1e88e5; }
-.board-node.warm { background: #fff8e1; border-color: #ffb300; }
-.board-node.hot { background: #ffebee; border-color: #e53935; }
+.board-node.cold { border-color: #3498db; background: #e3f2fd; color: #1e88e5; }
+.board-node.warm { border-color: #f1c40f; background: #fff8e1; color: #f39c12; }
+.board-node.hot { border-color: #e74c3c; background: #ffebee; color: #c0392b; }
 
 #ice-boy-character {
   position: absolute;
-  bottom: 120px;
+  bottom: 115px;
   left: 40px;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 10;
   cursor: pointer;
 }
 
 .character-sprite {
-  font-size: 48px;
+  font-size: 54px;
   text-align: center;
   animation: idle 1.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
 .signboard {
   position: absolute;
-  top: -10px;
+  top: -15px;
   background: white;
   border: 1px solid #ccc;
-  padding: 2px 4px;
+  padding: 2px 6px;
   font-size: 10px;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.left-hand { left: -25px; }
-.right-hand { right: -25px; }
+.left-hand { left: -28px; }
+.right-hand { right: -28px; }
 
 #interaction-panel {
   background: var(--panel-bg);
-  padding: 16px;
-  border-top: 2px solid rgba(0,0,0,0.05);
+  padding: 20px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
 }
 
 #countdown-bar-container {
   width: 100%;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
+  height: 8px;
+  background: #eaeded;
+  border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 #countdown-timer-fill {
   width: 100%;
   height: 100%;
-  background: var(--accent-color);
+  background: linear-gradient(90deg, var(--accent-color), #2ecc71);
   transition: width 0.1s linear;
+}
+
+#dialogue-box {
+  background: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border-left: 5px solid var(--accent-color);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#speaker-name {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+}
+
+#dialogue-text-en, #dialogue-text-zh {
+  margin: 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+body:not(.alt-lang) #dialogue-text-zh,
+body.alt-lang #dialogue-text-en,
+body:not(.alt-lang) .label-zh,
+body.alt-lang .label-en {
+  display: none !important;
+}
+
+#dialogue-next-btn {
+  display: none; /* Controlled dynamically via module loop layers */
 }
 
 #choice-buttons-container {
   display: flex;
-  justify-content: space-around;
-  margin-top: 12px;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 15px;
 }
 
-/* Glowing Animated Buttons */
 .choice-btn {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border: 2px solid var(--accent-color);
+  padding: 14px;
+  border: 2px solid #d5dbdb;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
-  width: 30%;
-  transition: all 0.2s ease, border-color 0.2s ease;
-  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.choice-btn .emoji {
+  font-size: 28px;
+  margin-bottom: 6px;
+  transition: transform 0.2s;
+}
+
+.choice-btn span:not(.emoji) {
+  font-size: 14px;
+  font-weight: bold;
+  color: #34495e;
 }
 
 .choice-btn:not(:disabled):hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 168, 255, 0.4);
-  border-color: #0088cc;
-  background-color: #f7fdff;
+  transform: translateY(-4px);
+  border-color: var(--accent-color);
+  box-shadow: var(--neon-glow);
+}
+
+.choice-btn:not(:disabled):hover .emoji {
+  transform: scale(1.2);
 }
 
 .choice-btn:disabled {
@@ -157,36 +251,37 @@ header {
 
 .hidden { display: none !important; }
 
-/* Screen Flash Screen Effects */
+/* Dynamic Screen Glow Classes */
 .flash-green {
-  animation: correctGlow 0.8s ease-out;
+  animation: correctGlow 0.8s ease-out forwards;
 }
 
 .flash-red {
-  animation: wrongGlow 0.5s ease-out;
+  animation: wrongGlow 0.5s ease-out forwards;
 }
 
-/* Idle and Jump Keyframe Animations */
 @keyframes idle {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); }
+  100% { transform: translateY(-10px); }
 }
 
 .jump-success {
-  animation: successJump 0.5s ease;
+  animation: successJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @keyframes successJump {
   0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-50px) scale(1.2); }
+  50% { transform: translateY(-60px) scale(1.15); }
 }
 
 @keyframes correctGlow {
-  0%, 100% { box-shadow: inset 0 0 0px transparent; }
-  30%, 70% { box-shadow: inset 0 0 100px rgba(46, 204, 113, 0.6); background-color: rgba(46, 204, 113, 0.1); }
+  0% { box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  50% { box-shadow: inset 0 0 80px var(--success-color), 0 12px 40px var(--success-color); background-color: rgba(46, 204, 113, 0.2); }
+  100% { box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
 }
 
 @keyframes wrongGlow {
-  0%, 100% { box-shadow: inset 0 0 0px transparent; }
-  20%, 80% { box-shadow: inset 0 0 80px rgba(231, 76, 60, 0.5); background-color: rgba(231, 76, 60, 0.1); }
+  0% { box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  50% { box-shadow: inset 0 0 80px var(--danger-color), 0 12px 40px var(--danger-color); background-color: rgba(231, 76, 60, 0.2); }
+  100% { box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
 }
