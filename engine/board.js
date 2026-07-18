@@ -1,10 +1,10 @@
-// engine/board.js - Layout Initialization & Dynamic Target Scrolling
+// engine/board.js - Layout Rendering & Dynamic Target Scrolling
 
 /**
  * Dynamically builds and draws the track nodes onto the game board wrapper
  * @param {Object} mapData The data config loaded from map.json
  */
-export function initBoard(mapData) {
+export function renderBoard(mapData) {
   const track = document.getElementById("board-track");
   if (!track) {
     console.error("Critical Error: #board-track container element was not found in the DOM.");
