@@ -195,10 +195,6 @@ body.alt-lang .label-en {
   display: none !important;
 }
 
-#dialogue-next-btn {
-  display: none; /* Controlled dynamically via module loop layers */
-}
-
 #choice-buttons-container {
   display: flex;
   justify-content: space-between;
@@ -251,7 +247,6 @@ body.alt-lang .label-en {
 
 .hidden { display: none !important; }
 
-/* Dynamic Screen Glow Classes */
 .flash-green {
   animation: correctGlow 0.8s ease-out forwards;
 }
