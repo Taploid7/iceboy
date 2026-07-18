@@ -52,24 +52,57 @@ async function loadCurrentLocation() {
   moveCharacterToNode(GameState.currentIndex);
   const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // Set question text frame cleanly before API payload updates it
+  // 1. Establish Default Text/Button States for Fallback Syncing
   showText(`What will happen to Ice Boy at the ${loc.name}?`, `當 Ice Boy 到達 ${loc.name}，會發生什麼事呢？`);
+  applyFallbackChoiceLabels();
 
   const choicesContainer = document.getElementById("choice-buttons-container");
   if (choicesContainer) choicesContainer.classList.remove("hidden");
 
   try {
+    // 2. Fetch from Backend
     const questionObj = await fetchAIQuestion(GameState.difficulty, loc.name, loc.state);
     if (questionObj) {
       GameState.currentQuestion = questionObj;
       showText(questionObj.question_en, questionObj.question_zh);
+      applyAPIChoiceLabels(questionObj.choices);
     }
   } catch (err) {
-    console.warn("API handling failed or blocked by CORS. Using fallback indices calculated from state.", err);
+    console.warn("Backend unavailable. Defaulting to local fallback validation structure.", err);
     GameState.currentQuestion = null;
   }
 
   startInactivityCountdown(loc.temp);
+}
+
+function applyFallbackChoiceLabels() {
+  const labels = [
+    { en: "freeze into ice", zh: "結冰成固體" },
+    { en: "melt into water", zh: "融化成液體" },
+    { en: "evaporate into steam", zh: "蒸發成氣體" }
+  ];
+  labels.forEach((lbl, idx) => {
+    const btn = document.querySelector(`.choice-btn[data-choice="${idx}"]`);
+    if (btn) {
+      const enSpan = btn.querySelector('.label-en');
+      const zhSpan = btn.querySelector('.label-zh');
+      if (enSpan) enSpan.textContent = lbl.en;
+      if (zhSpan) zhSpan.textContent = lbl.zh;
+    }
+  });
+}
+
+function applyAPIChoiceLabels(apiChoices) {
+  if (!apiChoices || apiChoices.length < 3) return;
+  apiChoices.forEach((choice, idx) => {
+    const btn = document.querySelector(`.choice-btn[data-choice="${idx}"]`);
+    if (btn) {
+      const enSpan = btn.querySelector('.label-en');
+      const zhSpan = btn.querySelector('.label-zh');
+      if (enSpan) enSpan.textContent = choice.en;
+      if (zhSpan) zhSpan.textContent = choice.zh;
+    }
+  });
 }
 
 function startInactivityCountdown(temperatureZone) {
@@ -89,7 +122,7 @@ function startInactivityCountdown(temperatureZone) {
 
 function triggerHintFallback(temp) {
   if (temp === "cold") {
-    showText("Think about temperature. Is this place cold, warm, or very hot?", "想一想溫度的變化。這個地方是冷、溫暖、還是非常熱呢？");
+    showText("Think about temperature. Is this place freezing cold?", "想一想溫度的變化。這個地方是不是非常寒冷呢？");
   } else if (temp === "warm") {
     showText("Would Ice Boy stay solid here, or start to melt?", "Ice Boy 在這裡會保持固體，還是會開始融化呢？");
   } else {
@@ -104,12 +137,11 @@ function verifySelection(choiceIndex) {
 
   const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // Explicit standard configuration mappings (0 = freeze, 1 = melt, 2 = evaporate)
+  // Calculate index directly based on the node's layout property (0=freeze, 1=melt, 2=evaporate)
   let correctIndex = 1; 
   if (loc.state === "freeze") correctIndex = 0;
   if (loc.state === "evaporate") correctIndex = 2;
 
-  // Sync up and override with the API result index directly if available
   if (GameState.currentQuestion && GameState.currentQuestion.answer !== undefined) {
     correctIndex = GameState.currentQuestion.answer;
   }
@@ -131,8 +163,8 @@ function verifySelection(choiceIndex) {
 
     if (sprite) sprite.className = "character-base jump-success";
     
-    const expEn = GameState.currentQuestion?.explanation_en || "Correct! Moving forward!";
-    const expZh = GameState.currentQuestion?.explanation_zh || "答對了！繼續前進！";
+    const expEn = GameState.currentQuestion?.explanation_en || "Correct! Excellent observation!";
+    const expZh = GameState.currentQuestion?.explanation_zh || "答對了！觀察得太仔細了！";
     showText(expEn, expZh);
 
     setTimeout(() => {
@@ -150,7 +182,7 @@ function verifySelection(choiceIndex) {
     }
 
     if (sprite) sprite.className = "character-base";
-    showText("Am I dense, or did I become a liquid again? Try again!", "我很笨拙（密度大）嗎？還是我又變成液體了？再試一次！");
+    showText("That wasn't quite right for this climate environment! Try again!", "在這個環境下不是這樣變化的喔！再試一次看看！");
     
     setTimeout(() => {
       if (container) container.classList.remove("flash-red");
