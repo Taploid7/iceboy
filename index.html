@@ -1,52 +1,60 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-Hant">
 <head>
-
-<title>Ice Boy's Transformation</title>
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ice Boy's Transformation / Ice Boy 的變身冒險</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
-
 <body>
+  <div id="game-container">
+    <header>
+      <button id="lang-toggle-btn">English / 繁體中文</button>
+      <div id="difficulty-badge">Difficulty: <span id="current-diff">Normal</span></div>
+    </header>
 
+    <main id="game-screen">
+      <div id="board-viewport">
+        <div id="board-track"></div>
+        <div id="ice-boy-character" class="character-base">
+          <div class="character-sprite">❄️</div>
+          <div class="signboard left-hand">EN</div>
+          <div class="signboard right-hand">中</div>
+        </div>
+      </div>
+    </main>
 
-<div id="game">
+    <section id="interaction-panel">
+      <div id="countdown-bar-container">
+        <div id="countdown-timer-fill"></div>
+      </div>
+      <div id="dialogue-box">
+        <h3 id="speaker-name">Narrator</h3>
+        <p id="dialogue-text-en">Loading adventure...</p>
+        <p id="dialogue-text-zh">遊戲載入中...</p>
+        <button id="dialogue-next-btn">Next / 下一步</button>
+      </div>
 
-<canvas id="canvas"></canvas>
+      <div id="choice-buttons-container" class="hidden">
+        <button class="choice-btn" data-choice="0">
+          <span class="emoji">❄️</span>
+          <span class="label-en">freeze into ice</span>
+          <span class="label-zh">結冰成固體</span>
+        </button>
+        <button class="choice-btn" data-choice="1">
+          <span class="emoji">💧</span>
+          <span class="label-en">melt into water</span>
+          <span class="label-zh">融化成液體</span>
+        </button>
+        <button class="choice-btn" data-choice="2">
+          <span class="emoji">💨</span>
+          <span class="label-en">evaporate into steam</span>
+          <span class="label-zh">蒸發成氣體</span>
+        </button>
+      </div>
+    </section>
+  </div>
 
-
-<div id="dialogue" class="hidden">
-
-<h2 id="speaker"></h2>
-
-<p id="text"></p>
-
-<button id="continue">
-Continue
-</button>
-
-</div>
-
-
-
-<div id="question" class="hidden">
-
-<h2 id="questionText"></h2>
-
-<div id="answers"></div>
-
-</div>
-
-
-</div>
-
-
-<script type="module" src="main.js"></script>
-
-
+  <script type="module" src="main.js"></script>
 </body>
-
 </html>
