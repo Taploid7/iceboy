@@ -17,9 +17,14 @@ export function initGameLoop(mapData) {
 }
 
 function setupEventHandlers() {
-  document.getElementById("lang-toggle-btn").addEventListener("click", () => {
-    document.body.classList.toggle("alt-lang");
-  });
+  const langBtn = document.getElementById("lang-toggle-btn");
+  if (langBtn) {
+    langBtn.addEventListener("click", () => {
+      document.body.classList.toggle("alt-lang");
+    });
+  } else {
+    console.warn("Element 'lang-toggle-btn' not found in HTML.");
+  }
 
   const choiceButtons = document.querySelectorAll(".choice-btn");
   choiceButtons.forEach(btn => {
@@ -29,9 +34,14 @@ function setupEventHandlers() {
     });
   });
 
-  document.getElementById("ice-boy-character").addEventListener("click", () => {
-    triggerBilingualScienceSign();
-  });
+  const iceBoy = document.getElementById("ice-boy-character");
+  if (iceBoy) {
+    iceBoy.addEventListener("click", () => {
+      triggerBilingualScienceSign();
+    });
+  } else {
+    console.warn("Element 'ice-boy-character' not found in HTML.");
+  }
 }
 
 async function loadCurrentLocation() {
@@ -107,4 +117,4 @@ function triggerBilingualScienceSign() {
   ];
   const item = scienceFacts[Math.floor(Math.random() * scienceFacts.length)];
   showText(item.en, item.zh);
-}
+}                                                                               
