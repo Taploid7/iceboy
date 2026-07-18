@@ -13,7 +13,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   const mapData = await mapResponse.json();
 
   // Bootstrap internal dependency states
-  initBoard(mapData);
-  renderBoard();
+  renderboard(mapData);
   initGameLoop(mapData);
 });
