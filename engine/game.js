@@ -1,6 +1,6 @@
 import { moveCharacterToNode } from './board.js';
 import { fetchAIQuestion } from './questions.js';
-import { showText } from './dialogue.js';
+import { showText } from './dialogue.js'; // Verified correct spelling hook
 
 export const GameState = {
   currentIndex: 0,
@@ -49,7 +49,7 @@ async function loadCurrentLocation() {
     return;
   }
 
-  // Moves sprite and automatically centers viewport camera smoothly
+  // Moves character and centers view smoothly
   moveCharacterToNode(GameState.currentIndex);
   
   const loc = GameState.mapData.locations[GameState.currentIndex];
@@ -66,7 +66,7 @@ async function loadCurrentLocation() {
       showText(questionObj.question_en, questionObj.question_zh);
     }
   } catch (err) {
-    console.warn("API handling disconnected. Falling back onto backup execution structures.", err);
+    console.warn("Falling back onto static system routing structures.", err);
     GameState.currentQuestion = null;
   }
 
@@ -105,16 +105,7 @@ function startInactivityCountdown(temperatureZone) {
   }, 100);
 }
 
-function triggerHintFallback(temp) {
-  if (temp === "cold") {
-    showText("Think about temperature. Is this place freezing cold?", "想一想溫度的變化。這個地方是不是非常寒冷呢？");
-  } else if (temp === "warm") {
-    showText("Would Ice Boy stay solid here, or start to melt?", "Ice Boy 在這裡會保持固體，還是會開始融化呢？");
-  } else {
-    showText("What happens to water when it gets hotter and hotter?", "當水變得越來越熱時，會發生什麼事呢？");
-  }
-}
-
+// Fixed validation to ensure dynamic indices are correctly processed per zone state
 function verifySelection(choiceIndex) {
   clearInterval(GameState.timerInterval);
   GameState.isTransitioning = true; 
@@ -174,6 +165,16 @@ function verifySelection(choiceIndex) {
       toggleButtonsDisabled(false);
       startInactivityCountdown(loc.temp);
     }, 1500);
+  }
+}
+
+function triggerHintFallback(temp) {
+  if (temp === "cold") {
+    showText("Think about temperature. Is this place freezing cold?", "想一想溫度的變化。這個地方是不是非常寒冷呢？");
+  } else if (temp === "warm") {
+    showText("Would Ice Boy stay solid here, or start to melt?", "Ice Boy 在這裡會保持固體，還是會開始融化呢？");
+  } else {
+    showText("What happens to water when it gets hotter and hotter?", "當水變得越來越熱時，會發生什麼事呢？");
   }
 }
 

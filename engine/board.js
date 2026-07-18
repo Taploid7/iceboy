@@ -10,20 +10,20 @@ export function moveCharacterToNode(nodeIndex) {
 
   const targetNode = nodes[nodeIndex];
   
-  // Calculate coordinates relative to parent viewport offset layers
+  // Calculate horizontal and vertical coordinates relative to the track container
   const nodeLeft = targetNode.offsetLeft;
   const nodeTop = targetNode.offsetTop;
   const nodeWidth = targetNode.offsetWidth;
   const nodeHeight = targetNode.offsetHeight;
 
-  // Position character centered relative to the node base
+  // Center character directly over the node base
   const finalX = nodeLeft + (nodeWidth / 2) - (character.offsetWidth / 2);
   const finalY = targetNode.parentElement.offsetHeight - nodeTop - (nodeHeight / 2);
 
   character.style.left = `${finalX}px`;
   character.style.bottom = `${finalY}px`;
 
-  // Auto-scroll the viewport wrapper to center the character cleanly
+  // Auto-scroll the viewport container to center the character cleanly
   if (screen) {
     const screenWidth = screen.clientWidth;
     const targetScrollLeft = nodeLeft - (screenWidth / 2) + (nodeWidth / 2);
