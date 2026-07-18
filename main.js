@@ -1,4 +1,4 @@
-import { initBoard, renderBoard } from './engine/board.js';
+import { renderBoard } from './engine/board.js';
 import { initGameLoop } from './engine/game.js';
 import { loadSave } from './engine/save.js';
 
