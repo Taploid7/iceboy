@@ -1,27 +1,7 @@
-export default class Save{
-
-
-save(data){
-
-localStorage.setItem(
-"iceboy",
-JSON.stringify(data)
-);
-
-
+export function saveProgress(index) {
+  localStorage.setItem('iceboy_progress', index);
 }
 
-
-
-load(){
-
-return JSON.parse(
-
-localStorage.getItem("iceboy")
-
-)
-
-}
-
-
+export function loadSave() {
+  return localStorage.getItem('iceboy_progress') || 0;
 }

@@ -1,0 +1,31 @@
+{
+  "start": { 
+    "name_en": "Ice Tray (in a cold press)", 
+    "name_zh": "製冰盒", 
+    "dialogue_en": "Where will I go?",
+    "dialogue_zh": "我接下來要去哪裡呢？"
+  },
+  "locations": [
+    { "id": 1, "name": "Refrigerator freezer", "state": "freeze", "temp": "cold" },
+    { "id": 2, "name": "Ice Cream Truck", "state": "freeze", "temp": "cold" },
+    { "id": 3, "name": "Penguin Playground", "state": "freeze", "temp": "cold" },
+    { "id": 4, "name": "Glacier & Ice Mountains", "state": "freeze", "temp": "cold" },
+    { "id": 5, "name": "Seawater Tide", "state": "melt", "temp": "warm", "note": "Salt helps ice melt because it lowers the freezing point!" },
+    { "id": 6, "name": "Swimming Pool", "state": "melt", "temp": "warm" },
+    { "id": 7, "name": "Bike Seat in the Sun", "state": "melt", "temp": "warm" },
+    { "id": 8, "name": "Sandy Beach", "state": "evaporate", "temp": "hot", "note": "Basked in the sun!" },
+    { "id": 9, "name": "Boiling Kettle", "state": "evaporate", "temp": "hot" },
+    { "id": 10, "name": "Sunny Desert", "state": "evaporate", "temp": "hot" },
+    { "id": 11, "name": "Thunder / Hail Cloud", "state": "wildcard", "temp": "mixed", "note": "Freeze, melt, freeze again!" },
+    { "id": 12, "name": "The Final Escape", "state": "free", "temp": "perfect" }
+  ],
+  "obstacles": [
+    { "id": "mom", "text_en": "Mom: Never go outside. Uh-oh, go back one step.", "text_zh": "媽媽：絕對不要出去！噢不，後退一步。", "steps": -1 },
+    { "id": "dad", "text_en": "Dad: Never ever go outside. Oops, go back 2 steps.", "text_zh": "爸爸：千萬絕對不要出去！哎呀，後退兩步。", "steps": -2 },
+    { "id": "doctor", "text_en": "Doctor: Never go in the sun. Aiyo, go back 3 steps.", "text_zh": "醫生：絕對不要曬太陽！哎喲喂呀，後退三步。", "steps": -3 }
+  ],
+  "end": { 
+    "name_en": "Best day ever! I’m free!", 
+    "name_zh": "最棒的一天！我完全自由了！" 
+  }
+}

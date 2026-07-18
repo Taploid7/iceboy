@@ -1,31 +1,16 @@
-[
 {
-"question":
-"Water freezes into what state?",
-
-"choices":
-[
-"Solid",
-"Gas",
-"Energy"
-],
-
-"answer":0
-},
-
-
-{
-"question":
-"Water vapor is a?",
-
-"choices":
-[
-"Liquid",
-"Gas",
-"Ice"
-],
-
-"answer":1
+  "fallback": [
+    {
+      "question_en": "What happens to Ice Boy if he sits on a sunny playground slide?",
+      "question_zh": "如果 Ice Boy 坐在大太陽底下的溜滑梯上，他會怎麼樣？",
+      "choices": [
+        { "en": "freeze into ice", "zh": "結冰成固體" },
+        { "en": "melt into water", "zh": "融化成液體" },
+        { "en": "evaporate into steam", "zh": "蒸發成氣體" }
+      ],
+      "answer": 1,
+      "explanation_en": "The hot slide warms Ice Boy up, turning his solid form into a warm liquid!",
+      "explanation_zh": "滾燙的溜滑梯使 Ice Boy 變熱，將他的固體狀態融化為溫暖的液體狀態！"
+    }
+  ]
 }
-
-]

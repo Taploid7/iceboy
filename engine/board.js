@@ -1,111 +1,28 @@
-export default class Board{
+let gameMapData = null;
 
-
-constructor(game){
-
-this.game=game;
-
-
-this.player={
-
-x:0,
-
-y:0
-
-};
-
-
-this.spaces=[
-
-{
-name:"Snow Mountain",
-x:100,
-y:100
-},
-
-{
-name:"Lake",
-x:250,
-y:200
-},
-
-{
-name:"Beach",
-x:400,
-y:100
+export function initBoard(mapData) {
+  gameMapData = mapData;
 }
 
-];
+export function renderBoard() {
+  const track = document.getElementById("board-track");
+  if (!track || !gameMapData) return;
+  track.innerHTML = "";
 
-
+  gameMapData.locations.forEach((loc, index) => {
+    const node = document.createElement("div");
+    node.className = `board-node ${loc.temp}`;
+    node.id = `node-${index}`;
+    node.innerHTML = `<div>${index + 1}</div><div>${loc.name}</div>`;
+    track.appendChild(node);
+  });
 }
 
-
-draw(){
-
-
-let canvas=
-document.querySelector("canvas");
-
-
-let ctx=
-canvas.getContext("2d");
-
-
-canvas.width=800;
-
-canvas.height=600;
-
-
-ctx.font="30px Arial";
-
-
-this.spaces.forEach(space=>{
-
-
-ctx.fillText(
-"❄",
-space.x,
-space.y
-);
-
-
-});
-
-
-ctx.fillText(
-
-"🧊",
-
-this.player.x,
-
-this.player.y
-
-);
-
-
-
-}
-
-
-roll(){
-
-
-let move=
-Math.floor(
-Math.random()*6
-)+1;
-
-
-this.player.x+=
-move*20;
-
-
-this.draw();
-
-
-}
-
-
-
+export function moveCharacterToNode(index) {
+  const charElem = document.getElementById("ice-boy-character");
+  const targetNode = document.getElementById(`node-${index}`);
+  if (charElem && targetNode) {
+    const offsetLeft = targetNode.offsetLeft + 10;
+    charElem.style.left = `${offsetLeft}px`;
+  }
 }

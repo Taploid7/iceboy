@@ -1,0 +1,9 @@
+[
+  {
+    "id": "intro",
+    "steps": [
+      { "speaker": "Narrator", "en": "Ice Boy lives inside a cold press ice tray.", "zh": "Ice Boy 住在冰冷的製冰盒中。" },
+      { "speaker": "Mom", "en": "Never go outside.", "zh": "絕對不要出去外面。" }
+    ]
+  }
+]
