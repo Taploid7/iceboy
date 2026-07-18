@@ -1,4 +1,3 @@
-// engine/game.js - Defensively Built Core Board Loop Engine
 import { moveCharacterToNode } from './board.js';
 import { fetchAIQuestion } from './questions.js';
 import { showText } from './dialogue.js';
@@ -9,7 +8,8 @@ export const GameState = {
   lastTime: 0,
   timerInterval: null,
   mapData: null,
-  currentQuestion: null
+  currentQuestion: null,
+  isTransitioning: false // Anti-spam click guard
 };
 
 export function initGameLoop(mapData) {
@@ -21,14 +21,13 @@ export function initGameLoop(mapData) {
 function setupEventHandlers() {
   const langBtn = document.getElementById("lang-toggle-btn");
   if (langBtn) {
-    langBtn.onclick = () => {
-      document.body.classList.toggle("alt-lang");
-    };
+    langBtn.onclick = () => { document.body.classList.toggle("alt-lang"); };
   }
 
   const choiceButtons = document.querySelectorAll(".choice-btn");
   choiceButtons.forEach(btn => {
     btn.onclick = (e) => {
+      if (GameState.isTransitioning) return; // Block spam clicking
       const selected = parseInt(e.currentTarget.getAttribute("data-choice"));
       verifySelection(selected);
     };
@@ -36,39 +35,33 @@ function setupEventHandlers() {
 
   const iceBoy = document.getElementById("ice-boy-character");
   if (iceBoy) {
-    iceBoy.onclick = () => {
-      triggerBilingualScienceSign();
-    };
+    iceBoy.onclick = () => { triggerBilingualScienceSign(); };
   }
 }
 
 async function loadCurrentLocation() {
   if (GameState.timerInterval) clearInterval(GameState.timerInterval);
-  
-  // Guard clause if data didn't load properly
-  if (!GameState.mapData || !GameState.mapData.locations) {
-    console.error("Game map data missing or corrupt.");
+  GameState.isTransitioning = false;
+  toggleButtonsDisabled(false);
+
+  if (GameState.currentIndex >= GameState.mapData.locations.length - 1) {
+    triggerGameCompletion();
     return;
   }
 
-  // Ensure character updates location on screen safely
   moveCharacterToNode(GameState.currentIndex);
-
   const loc = GameState.mapData.locations[GameState.currentIndex];
   showText(`What will happen to Ice Boy at the ${loc.name}?`, `當 Ice Boy 到達 ${loc.name}，會發生什麼事呢？`);
 
-  // Reveal selection UI panel
   const choicesContainer = document.getElementById("choice-buttons-container");
-  if (choicesContainer) {
-    choicesContainer.classList.remove("hidden");
-  }
+  if (choicesContainer) choicesContainer.classList.remove("hidden");
 
-  // Fetch question through Vercel or Fallback
   try {
     const questionObj = await fetchAIQuestion(GameState.difficulty, loc.name, loc.state);
     GameState.currentQuestion = questionObj;
   } catch (err) {
-    console.warn("Error fetching question, falling back...", err);
+    console.warn("Using smart fallback assessment parameters.", err);
+    GameState.currentQuestion = null;
   }
 
   startInactivityCountdown(loc.temp);
@@ -82,7 +75,6 @@ function startInactivityCountdown(temperatureZone) {
   GameState.timerInterval = setInterval(() => {
     timeLeft -= 2; 
     if (bar) bar.style.width = `${timeLeft}%`;
-
     if (timeLeft <= 0) {
       clearInterval(GameState.timerInterval);
       triggerHintFallback(temperatureZone);
@@ -102,30 +94,84 @@ function triggerHintFallback(temp) {
 
 function verifySelection(choiceIndex) {
   clearInterval(GameState.timerInterval);
-  
-  // Dynamic fallback mapping check if API didn't serve right index
-  const correct = GameState.currentQuestion?.answer !== undefined ? GameState.currentQuestion.answer : 1; 
-  const duration = (Date.now() - GameState.lastTime) / 1000;
-  const sprite = document.getElementById("ice-boy-character");
+  GameState.isTransitioning = true; // Activate click block
+  toggleButtonsDisabled(true);
 
-  if (choiceIndex === correct) {
+  const loc = GameState.mapData.locations[GameState.currentIndex];
+  
+  // Dynamically map target answers based on location state setup values
+  // Index values: 0 = freeze, 1 = melt, 2 = evaporate
+  let correctIndex = 1; 
+  if (loc.state === "freeze") correctIndex = 0;
+  if (loc.state === "evaporate") correctIndex = 2;
+
+  // Use API response index override if available
+  if (GameState.currentQuestion && GameState.currentQuestion.answer !== undefined) {
+    correctIndex = GameState.currentQuestion.answer;
+  }
+
+  const container = document.getElementById("game-container");
+  const sprite = document.getElementById("ice-boy-character");
+  const duration = (Date.now() - GameState.lastTime) / 1000;
+
+  if (choiceIndex === correctIndex) {
     if (duration < 3) GameState.difficulty = "hard";
-    
     const diffBadge = document.getElementById("current-diff");
     if (diffBadge) diffBadge.textContent = GameState.difficulty.toUpperCase();
+
+    // Trigger Screen Glow Green Feedback
+    if (container) {
+      container.classList.remove("flash-red");
+      void container.offsetWidth; // Force CSS animation reflow
+      container.classList.add("flash-green");
+    }
 
     if (sprite) sprite.className = "character-base jump-success";
     showText("Ta-Da! It feels good!", "鏘鏘！感覺太舒服了！");
 
     setTimeout(() => {
       if (sprite) sprite.className = "character-base";
-      GameState.currentIndex = (GameState.currentIndex + 1) % GameState.mapData.locations.length;
+      if (container) container.classList.remove("flash-green");
+      GameState.currentIndex++;
       loadCurrentLocation();
     }, 2000);
+
   } else {
+    // Trigger Screen Glow Red Feedback
+    if (container) {
+      container.classList.remove("flash-green");
+      void container.offsetWidth; 
+      container.classList.add("flash-red");
+    }
+
     if (sprite) sprite.className = "character-base blur-confused";
     showText("Am I dense, or did I become a liquid again? Try again!", "我很笨拙（密度大）嗎？還是我又變成液體了？再試一次！");
+    
+    setTimeout(() => {
+      if (container) container.classList.remove("flash-red");
+      GameState.isTransitioning = false; 
+      toggleButtonsDisabled(false);
+      startInactivityCountdown(loc.temp);
+    }, 1500);
   }
+}
+
+function toggleButtonsDisabled(disabledState) {
+  const buttons = document.querySelectorAll(".choice-btn");
+  buttons.forEach(btn => btn.disabled = disabledState);
+}
+
+function triggerGameCompletion() {
+  const sprite = document.getElementById("ice-boy-character");
+  if (sprite) {
+    sprite.innerHTML = `<div class="character-sprite" style="filter: drop-shadow(0 0 12px #fff); font-size:64px;">💎</div>`;
+  }
+  showText(
+    "Best day ever! I'm free! You unlocked the legendary Crystal Ice Boy form!", 
+    "最棒的一天！我完全自由了！你成功解鎖了傳說中的『水晶冰男孩』型態！"
+  );
+  const choicesContainer = document.getElementById("choice-buttons-container");
+  if (choicesContainer) choicesContainer.classList.add("hidden");
 }
 
 function triggerBilingualScienceSign() {
