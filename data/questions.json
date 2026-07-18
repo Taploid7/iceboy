@@ -1,16 +1,46 @@
 {
-  "fallback": [
+  "questions": [
     {
-      "question_en": "What happens to Ice Boy if he sits on a sunny playground slide?",
-      "question_zh": "如果 Ice Boy 坐在大太陽底下的溜滑梯上，他會怎麼樣？",
+      "location": "Refrigerator",
+      "topic": "freeze",
+      "question_en": "What will happen to Ice Boy inside the freezing Refrigerator?",
+      "question_zh": "當 Ice Boy 到達冰冷的冰箱時，會發生什麼事呢？",
+      "choices": [
+        { "en": "freeze into ice", "zh": "結冰成固體" },
+        { "en": "melt into water", "zh": "融化成液體" },
+        { "en": "evaporate into steam", "zh": "蒸發成氣體" }
+      ],
+      "answer": 0,
+      "explanation_en": "Correct! Low temperatures cause the water molecules to lose heat and freeze solid.",
+      "explanation_zh": "答對了！低溫導致水分子失去熱量並凝固成固體冰塊。"
+    },
+    {
+      "location": "Slide",
+      "topic": "melt",
+      "question_en": "What will happen to Ice Boy on the warm park Slide?",
+      "question_zh": "當 Ice Boy 到達溫暖的公園溜滑梯時，會發生什麼事呢？",
       "choices": [
         { "en": "freeze into ice", "zh": "結冰成固體" },
         { "en": "melt into water", "zh": "融化成液體" },
         { "en": "evaporate into steam", "zh": "蒸發成氣體" }
       ],
       "answer": 1,
-      "explanation_en": "The hot slide warms Ice Boy up, turning his solid form into a warm liquid!",
-      "explanation_zh": "滾燙的溜滑梯使 Ice Boy 變熱，將他的固體狀態融化為溫暖的液體狀態！"
+      "explanation_en": "Correct! The warm surface provides heat energy, causing the ice structure to melt.",
+      "explanation_zh": "答對了！溫暖的表面提供熱能，導致冰塊結構融化成水。"
+    },
+    {
+      "location": "Hot Puddle",
+      "topic": "evaporate",
+      "question_en": "What will happen to Ice Boy under the blazing sun in a Hot Puddle?",
+      "question_zh": "當 Ice Boy 到達烈日下的高溫水坑時，會發生什麼事呢？",
+      "choices": [
+        { "en": "freeze into ice", "zh": "結冰成固體" },
+        { "en": "melt into water", "zh": "融化成液體" },
+        { "en": "evaporate into steam", "zh": "蒸發成氣體" }
+      ],
+      "answer": 2,
+      "explanation_en": "Correct! Intense heat causes liquid water to rapidly vaporize and turn into steam gas.",
+      "explanation_zh": "答對了！強烈的熱量使液態水迅速汽化，轉化為水蒸氣。"
     }
   ]
 }
