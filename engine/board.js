@@ -1,28 +1,36 @@
-let gameMapData = null;
+// engine/board.js - Character Movement & Viewport Tracking
+export function moveCharacterToNode(nodeIndex) {
+  const nodes = document.querySelectorAll(".board-node");
+  const character = document.getElementById("ice-boy-character");
+  const screen = document.getElementById("game-screen");
 
-export function initBoard(mapData) {
-  gameMapData = mapData;
-}
+  if (!nodes || nodes.length === 0 || !character || nodeIndex >= nodes.length) {
+    return;
+  }
 
-export function renderBoard() {
-  const track = document.getElementById("board-track");
-  if (!track || !gameMapData) return;
-  track.innerHTML = "";
+  const targetNode = nodes[nodeIndex];
+  
+  // Calculate coordinates relative to parent viewport offset layers
+  const nodeLeft = targetNode.offsetLeft;
+  const nodeTop = targetNode.offsetTop;
+  const nodeWidth = targetNode.offsetWidth;
+  const nodeHeight = targetNode.offsetHeight;
 
-  gameMapData.locations.forEach((loc, index) => {
-    const node = document.createElement("div");
-    node.className = `board-node ${loc.temp}`;
-    node.id = `node-${index}`;
-    node.innerHTML = `<div>${index + 1}</div><div>${loc.name}</div>`;
-    track.appendChild(node);
-  });
-}
+  // Position character centered relative to the node base
+  const finalX = nodeLeft + (nodeWidth / 2) - (character.offsetWidth / 2);
+  const finalY = targetNode.parentElement.offsetHeight - nodeTop - (nodeHeight / 2);
 
-export function moveCharacterToNode(index) {
-  const charElem = document.getElementById("ice-boy-character");
-  const targetNode = document.getElementById(`node-${index}`);
-  if (charElem && targetNode) {
-    const offsetLeft = targetNode.offsetLeft + 10;
-    charElem.style.left = `${offsetLeft}px`;
+  character.style.left = `${finalX}px`;
+  character.style.bottom = `${finalY}px`;
+
+  // Auto-scroll the viewport wrapper to center the character cleanly
+  if (screen) {
+    const screenWidth = screen.clientWidth;
+    const targetScrollLeft = nodeLeft - (screenWidth / 2) + (nodeWidth / 2);
+    
+    screen.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      behavior: "smooth"
+    });
   }
 }

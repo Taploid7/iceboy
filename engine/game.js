@@ -49,33 +49,31 @@ async function loadCurrentLocation() {
     return;
   }
 
+  // Moves sprite and automatically centers viewport camera smoothly
   moveCharacterToNode(GameState.currentIndex);
-  const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // 1. Establish Default Text/Button States for Fallback Syncing
+  const loc = GameState.mapData.locations[GameState.currentIndex];
   showText(`What will happen to Ice Boy at the ${loc.name}?`, `當 Ice Boy 到達 ${loc.name}，會發生什麼事呢？`);
-  applyFallbackChoiceLabels();
+  applyChoiceButtonLabels();
 
   const choicesContainer = document.getElementById("choice-buttons-container");
   if (choicesContainer) choicesContainer.classList.remove("hidden");
 
   try {
-    // 2. Fetch from Backend
     const questionObj = await fetchAIQuestion(GameState.difficulty, loc.name, loc.state);
     if (questionObj) {
       GameState.currentQuestion = questionObj;
       showText(questionObj.question_en, questionObj.question_zh);
-      applyAPIChoiceLabels(questionObj.choices);
     }
   } catch (err) {
-    console.warn("Backend unavailable. Defaulting to local fallback validation structure.", err);
+    console.warn("API handling disconnected. Falling back onto backup execution structures.", err);
     GameState.currentQuestion = null;
   }
 
   startInactivityCountdown(loc.temp);
 }
 
-function applyFallbackChoiceLabels() {
+function applyChoiceButtonLabels() {
   const labels = [
     { en: "freeze into ice", zh: "結冰成固體" },
     { en: "melt into water", zh: "融化成液體" },
@@ -88,19 +86,6 @@ function applyFallbackChoiceLabels() {
       const zhSpan = btn.querySelector('.label-zh');
       if (enSpan) enSpan.textContent = lbl.en;
       if (zhSpan) zhSpan.textContent = lbl.zh;
-    }
-  });
-}
-
-function applyAPIChoiceLabels(apiChoices) {
-  if (!apiChoices || apiChoices.length < 3) return;
-  apiChoices.forEach((choice, idx) => {
-    const btn = document.querySelector(`.choice-btn[data-choice="${idx}"]`);
-    if (btn) {
-      const enSpan = btn.querySelector('.label-en');
-      const zhSpan = btn.querySelector('.label-zh');
-      if (enSpan) enSpan.textContent = choice.en;
-      if (zhSpan) zhSpan.textContent = choice.zh;
     }
   });
 }
@@ -137,7 +122,6 @@ function verifySelection(choiceIndex) {
 
   const loc = GameState.mapData.locations[GameState.currentIndex];
   
-  // Calculate index directly based on the node's layout property (0=freeze, 1=melt, 2=evaporate)
   let correctIndex = 1; 
   if (loc.state === "freeze") correctIndex = 0;
   if (loc.state === "evaporate") correctIndex = 2;
